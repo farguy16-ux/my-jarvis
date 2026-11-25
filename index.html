@@ -1,61 +1,163 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JARVIS</title>
+<title>JARVIS Personal Assistant</title>
 <style>
-body{background:#071522;color:white;font-family:Arial;text-align:center;padding:20px}
-h1{color:#42d9ef;font-size:42px;letter-spacing:6px}
-#chat{background:#102638;padding:15px;border-radius:15px;min-height:250px;text-align:left}
-.msg{padding:12px;margin:10px;border-radius:12px;background:#19465b}
-input{padding:14px;width:60%;border-radius:10px;border:0}
-button{padding:13px;background:#087f9b;color:white;border:0;border-radius:10px;margin:5px}
+body {
+  background:#020817;
+  color:white;
+  font-family:Arial,sans-serif;
+  text-align:center;
+  padding:20px;
+}
+h1 {
+  color:#16b6cc;
+  font-size:42px;
+  letter-spacing:7px;
+  margin-top:50px;
+}
+#chat {
+  background:#061326;
+  padding:15px;
+  border-radius:20px;
+  min-height:250px;
+  text-align:left;
+  margin:25px auto;
+  max-width:550px;
+}
+.message {
+  background:#0a203a;
+  padding:15px;
+  margin:12px 0;
+  border-radius:15px;
+  font-size:18px;
+}
+input {
+  padding:15px;
+  width:65%;
+  border-radius:12px;
+  border:0;
+  font-size:16px;
+}
+button {
+  padding:14px;
+  margin:5px;
+  border:0;
+  border-radius:12px;
+  background:#10b9ce;
+  color:#00111b;
+  font-weight:bold;
+}
 </style>
 </head>
 <body>
+
 <h1>J.A.R.V.I.S.</h1>
-<p>PERSONAL AI ASSISTANT</p>
-<div id="chat"></div>
-<br>
-<input id="entry" placeholder="Talk to JARVIS...">
-<button onclick="send()">Send</button>
-<br>
-<button onclick="listen()">🎙 Speak</button>
-<button onclick="readReply()">🔊 Speak reply</button>
+<h2>PERSONAL AI ASSISTANT</h2>
+
+<div id="chat">
+<div class="message">JARVIS ONLINE. Welcome!</div>
+</div>
+
+<input id="input" placeholder="Talk to JARVIS...">
+<button onclick="send()">SEND</button>
+<button onclick="listen()">🎙️</button>
+<button onclick="stopSpeaking()">🔇</button>
+
 <script>
-let last="Hello! I am JARVIS.";
-const chat=document.getElementById("chat");
-function add(t){let d=document.createElement("div");d.className="msg";d.textContent=t;chat.appendChild(d)}
-function send(){
-let q=document.getElementById("entry").value.trim();
-if(!q)return;
-add("YOU: "+q);
-let t=q.toLowerCase(),a="I am still learning. Type help to see my commands.";
-if(t.includes("hello")||t.includes("hi"))a="Hello! How can I help you?";
-else if(t.includes("your name"))a="I am JARVIS, your personal assistant.";
-else if(t==="help")a="Try: time, date, open YouTube, remember buy milk, show notes.";
-else if(t.includes("time"))a="The time is "+new Date().toLocaleTimeString();
-else if(t.includes("date"))a="Today is "+new Date().toDateString();
-else if(t.startsWith("open youtube")){a="Opening YouTube";window.open("https://youtube.com","_blank")}
-else if(t.startsWith("open google")){a="Opening Google";window.open("https://google.com","_blank")}
-else if(t.startsWith("remember ")){
-let n=JSON.parse(localStorage.getItem("notes")||"[]");
-n.push(q.substring(9));localStorage.setItem("notes",JSON.stringify(n));a="I saved your note.";
+const chat = document.getElementById("chat");
+
+function addMessage(who, text) {
+  const div = document.createElement("div");
+  div.className = "message";
+  div.textContent = who + ": " + text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
-else if(t.includes("show notes"))a=(JSON.parse(localStorage.getItem("notes")||"[]").join(", ")||"No notes saved.");
-last=a;add("JARVIS: "+a);
-document.getElementById("entry").value="";
+
+function speak(text) {
+  speechSynthesis.cancel();
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.rate = 0.9;
+  speech.pitch = 0.85;
+  speechSynthesis.speak(speech);
 }
-function readReply(){speechSynthesis.speak(new SpeechSynthesisUtterance(last))}
-function listen(){
-let R=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!R){add("Voice input is not supported in this browser.");return}
-let r=new R();r.lang="en-KE";
-r.onresult=e=>{document.getElementById("entry").value=e.results[0][0].transcript;send()};
-r.start();
+
+function reply(command) {
+  const c = command.toLowerCase();
+  let answer;
+
+  if (c.includes("hello") || c.includes("hi jarvis")) {
+    answer = "Hello sir. JARVIS is ready.";
+  } 
+  else if (c.includes("your name")) {
+    answer = "My name is JARVIS, your personal assistant.";
+  }
+  else if (c.includes("time")) {
+    answer = "The current time is " +
+      new Date().toLocaleTimeString();
+  }
+  else if (c.includes("date")) {
+    answer = "Today is " +
+      new Date().toDateString();
+  }
+  else if (c.includes("help")) {
+    answer = "You can ask me for the time, date, or introduce yourself.";
+  }
+  else if (c.includes("thank")) {
+    answer = "You're welcome, sir.";
+  }
+  else {
+    answer = "I am still learning this command, sir. More intelligence will be added soon.";
+  }
+
+  addMessage("JARVIS", answer);
+  speak(answer);
 }
-add("JARVIS ONLINE. Welcome!");
+
+function send() {
+  const input = document.getElementById("input");
+  const message = input.value.trim();
+  if (!message) return;
+
+  addMessage("YOU", message);
+  input.value = "";
+  reply(message);
+}
+
+function listen() {
+  const Recognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Recognition) {
+    alert("Voice recognition is not supported in this browser. Try Chrome.");
+    return;
+  }
+
+  const recognition = new Recognition();
+  recognition.lang = "en-US";
+  recognition.onresult = function(event) {
+    document.getElementById("input").value =
+      event.results[0][0].transcript;
+    send();
+  };
+  recognition.onerror = function() {
+    alert("Microphone error. Please try again.");
+  };
+  recognition.start();
+}
+
+function stopSpeaking() {
+  speechSynthesis.cancel();
+}
+
+document.getElementById("input").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") send();
+});
 </script>
+
 </body>
 </html>
