@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JARVIS</title>
+<style>
+body{background:#071522;color:white;font-family:Arial;text-align:center;padding:20px}
+h1{color:#42d9ef;font-size:42px;letter-spacing:6px}
+#chat{background:#102638;padding:15px;border-radius:15px;min-height:250px;text-align:left}
+.msg{padding:12px;margin:10px;border-radius:12px;background:#19465b}
+input{padding:14px;width:60%;border-radius:10px;border:0}
+button{padding:13px;background:#087f9b;color:white;border:0;border-radius:10px;margin:5px}
+</style>
+</head>
+<body>
+<h1>J.A.R.V.I.S.</h1>
+<p>PERSONAL AI ASSISTANT</p>
+<div id="chat"></div>
+<br>
+<input id="entry" placeholder="Talk to JARVIS...">
+<button onclick="send()">Send</button>
+<br>
+<button onclick="listen()">🎙 Speak</button>
+<button onclick="readReply()">🔊 Speak reply</button>
+<script>
+let last="Hello! I am JARVIS.";
+const chat=document.getElementById("chat");
+function add(t){let d=document.createElement("div");d.className="msg";d.textContent=t;chat.appendChild(d)}
+function send(){
+let q=document.getElementById("entry").value.trim();
+if(!q)return;
+add("YOU: "+q);
+let t=q.toLowerCase(),a="I am still learning. Type help to see my commands.";
+if(t.includes("hello")||t.includes("hi"))a="Hello! How can I help you?";
+else if(t.includes("your name"))a="I am JARVIS, your personal assistant.";
+else if(t==="help")a="Try: time, date, open YouTube, remember buy milk, show notes.";
+else if(t.includes("time"))a="The time is "+new Date().toLocaleTimeString();
+else if(t.includes("date"))a="Today is "+new Date().toDateString();
+else if(t.startsWith("open youtube")){a="Opening YouTube";window.open("https://youtube.com","_blank")}
+else if(t.startsWith("open google")){a="Opening Google";window.open("https://google.com","_blank")}
+else if(t.startsWith("remember ")){
+let n=JSON.parse(localStorage.getItem("notes")||"[]");
+n.push(q.substring(9));localStorage.setItem("notes",JSON.stringify(n));a="I saved your note.";
+}
+else if(t.includes("show notes"))a=(JSON.parse(localStorage.getItem("notes")||"[]").join(", ")||"No notes saved.");
+last=a;add("JARVIS: "+a);
+document.getElementById("entry").value="";
+}
+function readReply(){speechSynthesis.speak(new SpeechSynthesisUtterance(last))}
+function listen(){
+let R=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!R){add("Voice input is not supported in this browser.");return}
+let r=new R();r.lang="en-KE";
+r.onresult=e=>{document.getElementById("entry").value=e.results[0][0].transcript;send()};
+r.start();
+}
+add("JARVIS ONLINE. Welcome!");
+</script>
+</body>
+</html>
