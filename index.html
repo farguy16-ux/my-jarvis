@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JARVIS Personal Assistant</title>
+<title>FRIDAY Personal Assistant</title>
 <style>
 body {
   background:#020817;
@@ -58,10 +58,10 @@ button {
 <h2>PERSONAL AI ASSISTANT</h2>
 
 <div id="chat">
-<div class="message">JARVIS ONLINE. Welcome!</div>
+<div class="message">FRIDAY ONLINE. Welcome!</div>
 </div>
 
-<input id="input" placeholder="Talk to JARVIS...">
+<input id="input" placeholder="Talk to FRIDAY...">
 <button onclick="send()">SEND</button>
 <button onclick="listen()">🎙️</button>
 <button onclick="stopSpeaking()">🔇</button>
@@ -106,10 +106,10 @@ function reply(command) {
   let answer;
 
   if (c.includes("hello") || c.includes("hi jarvis")) {
-    answer = "Hello sir. JARVIS is ready.";
+    answer = "Hello sir. FRIDAY is ready.";
   } 
   else if (c.includes("your name")) {
-    answer = "My name is JARVIS, your personal assistant.";
+    answer = "My name is FRIDAY, your personal assistant.";
   }
   else if (c.includes("time")) {
     answer = "The current time is " +
